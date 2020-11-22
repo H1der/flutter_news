@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_news/common/apis/api.dart';
+import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/screen.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
-import 'package:flutter_news/common/widgets/button.dart';
-import 'package:flutter_news/common/widgets/input.dart';
-import 'package:flutter_news/common/widgets/toast.dart';
+import 'package:flutter_news/common/widgets/widgets.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -19,12 +19,12 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _passController = TextEditingController();
 
   // 跳转 注册页面
-  _handleNavSignUp(){
+  _handleNavSignUp() {
     Navigator.pushNamed(context, "/sign-up");
   }
 
   // 执行登录操作
-  _handleSignIn() {
+  _handleSignIn() async {
     if (!duIsEmail(_emailController.value.text)) {
       toastInfo(msg: "邮箱格式不正确");
       return;
@@ -33,6 +33,13 @@ class _SignInPageState extends State<SignInPage> {
       toastInfo(msg: "密码不能小于6位");
       return;
     }
+
+    UserRequestEntity params = UserRequestEntity(
+        email: _emailController.value.text,
+        password: duSHA256(_passController.value.text));
+
+    UserResponseEntity res = await UserApi.login(params: params);
+    print(res);
   }
 
 
@@ -146,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
                     fontWeight: FontWeight.w400,
                     fontSize: duSetFontSize(16),
                     height: 1 //  设置下行高,否则字体下沉
-                    ),
+                ),
               ),
             ),
           )
@@ -208,12 +215,12 @@ class _SignInPageState extends State<SignInPage> {
     return Container(
       margin: EdgeInsets.only(bottom: duSetWidth(20)),
       child: btnFlatButtonWidget(onPressed: _handleNavSignUp,
-        width: 294,
-        gbColor: AppColors.secondaryElement,
-        fontColor: AppColors.primaryText,
-        title:"Sign up",
-        fontWeight: FontWeight.w500,
-        fontSize: 16
+          width: 294,
+          gbColor: AppColors.secondaryElement,
+          fontColor: AppColors.primaryText,
+          title: "Sign up",
+          fontWeight: FontWeight.w500,
+          fontSize: 16
 
       ),
     );

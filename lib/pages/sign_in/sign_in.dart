@@ -34,11 +34,11 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    UserRequestEntity params = UserRequestEntity(
+    UserLoginRequestEntity params = UserLoginRequestEntity(
         email: _emailController.value.text,
         password: duSHA256(_passController.value.text));
 
-    UserResponseEntity res = await UserApi.login(params: params);
+    UserLoginResponseEntity res = await UserApi.login(params: params);
     print(res);
   }
 

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_news/common/apis/api.dart';
-import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/screen.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
@@ -25,23 +23,23 @@ class _SignInPageState extends State<SignInPage> {
 
   // 执行登录操作
   _handleSignIn() async {
-    if (!duIsEmail(_emailController.value.text)) {
-      toastInfo(msg: "邮箱格式不正确");
-      return;
-    }
-    if (!duCheckStringLength(_passController.value.text, 6)) {
-      toastInfo(msg: "密码不能小于6位");
-      return;
-    }
-
-    UserLoginRequestEntity params = UserLoginRequestEntity(
-        email: _emailController.value.text,
-        password: duSHA256(_passController.value.text));
-
-    UserLoginResponseEntity res = await UserApi.login(params: params);
-    print(res);
+    // if (!duIsEmail(_emailController.value.text)) {
+    //   toastInfo(msg: "邮箱格式不正确");
+    //   return;
+    // }
+    // if (!duCheckStringLength(_passController.value.text, 6)) {
+    //   toastInfo(msg: "密码不能小于6位");
+    //   return;
+    // }
+    //
+    // UserLoginRequestEntity params = UserLoginRequestEntity(
+    //     email: _emailController.value.text,
+    //     password: duSHA256(_passController.value.text));
+    //
+    // UserLoginResponseEntity res = await UserApi.login(params: params);
+    // print(res);
+    Navigator.pushNamed(context, "/app");
   }
-
 
   // logo
   Widget _buildLogo() {

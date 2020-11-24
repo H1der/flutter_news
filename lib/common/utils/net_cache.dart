@@ -60,7 +60,7 @@ class NetCache extends Interceptor {
   }
 
   @override
-  Future onResponse(Response response) {
+  onResponse(Response response) async {
 // 如果启用缓存，将返回结果保存到缓存
     if (CACHE_ENABLE) {
       _saveCache(response);
@@ -68,7 +68,7 @@ class NetCache extends Interceptor {
   }
 
   @override
-  Future onError(DioError err) {}
+  onError(DioError err) async {}
 
   _saveCache(Response object) {
     RequestOptions options = object.request;

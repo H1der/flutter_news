@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_news/common/apis/news.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/screen.dart';
+import 'package:flutter_news/pages/main/ad_widget.dart';
 import 'package:flutter_news/pages/main/categories_widget.dart';
+import 'package:flutter_news/pages/main/channels_widget.dart';
+import 'package:flutter_news/pages/main/news_item_widget.dart';
+import 'package:flutter_news/pages/main/newsletter_widget.dart';
+import 'package:flutter_news/pages/main/recommend_widget.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -38,49 +43,73 @@ class _MainPageState extends State<MainPage> {
 
   // 分类菜单
   Widget _buildCategories() {
-    return newsCategoriesWidget(
-        categories: _categories,
-        selCategoryCode: _selCategoryCode,
-        onTap: (CategoryResponseEntity item) {
-          setState(() {
-            _selCategoryCode = item.code;
-          });
-        });
+    return _categories == null
+        ? Container()
+        : newsCategoriesWidget(
+            categories: _categories,
+            selCategoryCode: _selCategoryCode,
+            onTap: (CategoryResponseEntity item) {
+              setState(() {
+                _selCategoryCode = item.code;
+              });
+            });
   }
 
   //抽取前先实现业务
 
   // 推荐阅读
   Widget _buildRecommend() {
-    return Container(
-      height: duSetHeight(490),
-      color: Colors.amber,
-    );
+    // 没接受到数据之前用骨架展示
+    return _newsRecommend == null
+        ? Container()
+        : recommendWidget(_newsRecommend);
   }
 
   // 频道
   Widget _buildChannels() {
-    return Container(
-      height: duSetHeight(137),
-      color: Colors.teal,
+    return _channels == null
+        ? Container()
+        : newsChanelsWidget(
+      channels: _channels,
+      onTap: (ChannelResponseEntity item) {},
     );
   }
 
   // 新闻列表
   Widget _buildNewsList() {
-    return Container(
+    return _newsPageList == null
+        ? Container(
       height: duSetHeight(161 * 5 + 100.0),
-      color: Colors.yellowAccent,
+    )
+        : Column(
+      children: _newsPageList.items.map((item) {
+        // 新闻行
+        List<Widget> widgets = <Widget>[
+          newsItem(item),
+          Divider(height: 1),
+        ];
+
+        // 每 5 条 显示广告
+        int index = _newsPageList.items.indexOf(item);
+        if (((index + 1) % 5) == 0) {
+          widgets.addAll(<Widget>[
+            adWidget(),
+            Divider(height: 1),
+          ]);
+        }
+
+        // 返回
+        return Column(
+          children: widgets,
+        );
+      }).toList(),
     );
   }
 
   // ad广告条
   // 邮件订阅
   Widget _buildEmailSubscribe() {
-    return Container(
-      height: duSetHeight(259),
-      color: Colors.blue,
-    );
+    return newsletterWidget();
   }
 
   @override

@@ -35,6 +35,12 @@ dependencies:
   # 本地存储
   shared_preferences: ^0.5.12+4
 
+  # 图片缓存
+  cached_network_image: ^2.3.3
+
+  # 日期处理
+  intl: ^0.16.1
+
   # 加密
   crypto: ^2.1.5
 

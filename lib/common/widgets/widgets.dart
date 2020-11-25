@@ -1,5 +1,6 @@
 library value;
 
-export 'input.dart';
 export 'button.dart';
+export 'image.dart';
+export 'input.dart';
 export 'toast.dart';

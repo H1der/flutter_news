@@ -1,16 +1,25 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_news/common/utils/utils.dart';
-import 'package:flutter_news/common/values/server.dart';
 import 'package:flutter_news/common/values/value.dart';
-import 'package:flutter_news/common/widgets/toast.dart';
+import 'package:flutter_news/common/widgets/widgets.dart';
 import 'package:flutter_news/global.dart';
 
+/*
+  * http 操作类
+  *
+  * 手册
+  * https://github.com/flutterchina/dio/blob/master/README-ZH.md#formdata
+  *
+  * 从2.1.x升级到 3.x
+  * https://github.com/flutterchina/dio/blob/master/migration_to_3.0.md
+*/
 class HttpUtil {
   static HttpUtil _instance = HttpUtil._internal();
 
@@ -22,13 +31,17 @@ class HttpUtil {
   HttpUtil._internal() {
     // BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
     BaseOptions options = new BaseOptions(
-      // 请求基准地址
+      // 请求基地址,可以包含子路径
       baseUrl: SERVER_API_URL,
-      // 链接服务器超时时间
+
+      // baseUrl: storage.read(key: STORAGE_KEY_APIURL) ?? SERVICE_API_BASEURL,
+      //连接服务器超时时间，单位是毫秒.
       connectTimeout: 10000,
-      // 相应流上前后两次受到的间隔
+
+      // 响应流上前后两次接受到数据的间隔，单位为毫秒。
       receiveTimeout: 5000,
-      //Http请求头
+
+      // Http请求头.
       headers: {},
 
       /// 请求的Content-Type，默认值是"application/json; charset=utf-8".
@@ -46,6 +59,7 @@ class HttpUtil {
       /// 如果想以文本(字符串)格式接收响应数据，请使用 `PLAIN`.
       responseType: ResponseType.json,
     );
+
     dio = new Dio(options);
 
     // Cookie管理
@@ -55,12 +69,8 @@ class HttpUtil {
     // 添加拦截器
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
-      // print("请求之前");
-      // Loading.before(options.uri, '正在通讯...');
       return options; //continue
     }, onResponse: (Response response) {
-      // print("响应之前");
-      // Loading.complete(response.request.uri);
       return response; // continue
     }, onError: (DioError e) {
       ErrorEntity eInfo = createErrorEntity(e);
@@ -70,19 +80,18 @@ class HttpUtil {
       var context = e.request.extra["context"];
       if (context != null) {
         switch (eInfo.code) {
-          case 401: // 没有权限，重新登录
+          case 401: // 没有权限 重新登录
             goLoginPage(context);
             break;
           default:
         }
       }
-
-      // print("错误之前");
-      // Loading.complete(e.request.uri);
-      return eInfo; //continue
+      return eInfo;
     }));
+
     // 加内存缓存
     dio.interceptors.add(NetCache());
+
     // 在调试模式下需要抓包调试，所以我们使用代理，并禁用HTTPS证书校验
     if (!Global.isRelease && PROXY_ENABLE) {
       (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
@@ -194,7 +203,7 @@ class HttpUtil {
     }
   }
 
-/*
+  /*
    * 取消请求
    *
    * 同一个cancel token 可以用于多个请求，当一个cancel token取消时，所有使用该cancel token的请求都会被取消。
@@ -221,6 +230,7 @@ class HttpUtil {
   /// noCache 是否不缓存 默认 true
   /// list 是否列表 默认 false
   /// cacheKey 缓存key
+  /// cacheDisk 是否磁盘缓存
   Future get(
     String path, {
     @required BuildContext context,
@@ -232,34 +242,34 @@ class HttpUtil {
     String cacheKey,
     bool cacheDisk = false,
   }) async {
-    try {
-      Options requestOptions = options ?? Options();
-      requestOptions = requestOptions.merge(extra: {
-        "context": context,
-        "refresh": refresh,
-        "noCache": noCache,
-        "list": list,
-        "cacheKey": cacheKey,
-        "cacheDisk": cacheDisk
-      });
-      Map<String, dynamic> _authorization = getAuthorizationHeader();
-      if (_authorization != null) {
-        requestOptions = requestOptions.merge(headers: _authorization);
-      }
-
-      var response = await dio.get(path,
-          queryParameters: params,
-          options: requestOptions,
-          cancelToken: cancelToken);
-      return response.data;
-    } on DioError catch (e) {
-      throw createErrorEntity(e);
+    Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+      "refresh": refresh,
+      "noCache": noCache,
+      "list": list,
+      "cacheKey": cacheKey,
+      "cacheDisk": cacheDisk,
+    });
+    Map<String, dynamic> _authorization = getAuthorizationHeader();
+    if (_authorization != null) {
+      requestOptions = requestOptions.merge(headers: _authorization);
     }
+
+    var response = await dio.get(path,
+        queryParameters: params,
+        options: requestOptions,
+        cancelToken: cancelToken);
+    return response.data;
   }
 
   /// restful post 操作
-  Future post(String path,
-      {@required BuildContext context, dynamic params, Options options}) async {
+  Future post(
+    String path, {
+    @required BuildContext context,
+    dynamic params,
+    Options options,
+  }) async {
     Options requestOptions = options ?? Options();
     requestOptions = requestOptions.merge(extra: {
       "context": context,
@@ -274,8 +284,16 @@ class HttpUtil {
   }
 
   /// restful put 操作
-  Future put(String path, {dynamic params, Options options}) async {
+  Future put(
+    String path, {
+    @required BuildContext context,
+    dynamic params,
+    Options options,
+  }) async {
     Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+    });
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization != null) {
       requestOptions = requestOptions.merge(headers: _authorization);
@@ -286,8 +304,16 @@ class HttpUtil {
   }
 
   /// restful patch 操作
-  Future patch(String path, {dynamic params, Options options}) async {
+  Future patch(
+    String path, {
+    @required BuildContext context,
+    dynamic params,
+    Options options,
+  }) async {
     Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+    });
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization != null) {
       requestOptions = requestOptions.merge(headers: _authorization);
@@ -298,8 +324,16 @@ class HttpUtil {
   }
 
   /// restful delete 操作
-  Future delete(String path, {dynamic params, Options options}) async {
+  Future delete(
+    String path, {
+    @required BuildContext context,
+    dynamic params,
+    Options options,
+  }) async {
     Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+    });
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization != null) {
       requestOptions = requestOptions.merge(headers: _authorization);
@@ -310,8 +344,16 @@ class HttpUtil {
   }
 
   /// restful post form 表单提交操作
-  Future postForm(String path, {dynamic params, Options options}) async {
+  Future postForm(
+    String path, {
+    @required BuildContext context,
+    dynamic params,
+    Options options,
+  }) async {
     Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+    });
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization != null) {
       requestOptions = requestOptions.merge(headers: _authorization);

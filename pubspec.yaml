@@ -28,6 +28,8 @@ dependencies:
 
   fluttertoast: ^7.1.4
 
+  flutter_easyrefresh: ^2.1.6
+
   dio: ^3.0.10
   cookie_jar: ^1.0.1
   dio_cookie_manager: ^1.0.0
@@ -46,6 +48,9 @@ dependencies:
 
   # 加密
   crypto: ^2.1.5
+
+  # 骨架屏
+  pk_skeleton: ^0.0.2
 
 dev_dependencies:
   flutter_test:

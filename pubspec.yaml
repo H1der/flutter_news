@@ -41,6 +41,9 @@ dependencies:
   # 日期处理
   intl: ^0.16.1
 
+  # 状态管理
+  provider: ^4.3.2+2
+
   # 加密
   crypto: ^2.1.5
 

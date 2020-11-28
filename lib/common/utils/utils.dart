@@ -1,5 +1,6 @@
 library utils;
 
+export 'authentication.dart';
 export 'date.dart';
 export 'http.dart';
 export 'iconfont.dart';

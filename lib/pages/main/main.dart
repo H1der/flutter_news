@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_news/common/apis/news.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/screen.dart';
+import 'package:flutter_news/common/utils/utils.dart';
+import 'package:flutter_news/common/values/value.dart';
 import 'package:flutter_news/pages/main/ad_widget.dart';
 import 'package:flutter_news/pages/main/categories_widget.dart';
 import 'package:flutter_news/pages/main/channels_widget.dart';
@@ -26,14 +30,29 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _loadAllData();
+    _loadLatestWithDiskCache();
+  }
+
+  // 如果有磁盘缓存，延迟3秒拉取更新档案
+  _loadLatestWithDiskCache() {
+    if (CACHE_ENABLE == true) {
+      var cacheData = StorageUtil().getJSON(STORAGE_INDEX_NEWS_CACHE_KEY);
+      if (cacheData != null) {
+        Timer(Duration(seconds: 1), () {
+          // _controller.callRefresh();
+        });
+      }
+    }
   }
 
   // 读取所有数据
   _loadAllData() async {
-    _categories = await NewsAPI.categories(context: context);
-    _channels = await NewsAPI.channels(context: context);
-    _newsRecommend = await NewsAPI.newsRecommend(context: context);
-    _newsPageList = await NewsAPI.newsPageList(context: context);
+    _categories = await NewsAPI.categories(context: context, cacheDisk: true);
+    _channels = await NewsAPI.channels(context: context, cacheDisk: true);
+    _newsRecommend =
+        await NewsAPI.newsRecommend(context: context, cacheDisk: true);
+    _newsPageList =
+        await NewsAPI.newsPageList(context: context, cacheDisk: true);
 
     _selCategoryCode = _categories.first.code;
     if (mounted) {
@@ -46,13 +65,13 @@ class _MainPageState extends State<MainPage> {
     return _categories == null
         ? Container()
         : newsCategoriesWidget(
-            categories: _categories,
-            selCategoryCode: _selCategoryCode,
-            onTap: (CategoryResponseEntity item) {
-              setState(() {
-                _selCategoryCode = item.code;
-              });
-            });
+        categories: _categories,
+        selCategoryCode: _selCategoryCode,
+        onTap: (CategoryResponseEntity item) {
+          setState(() {
+            _selCategoryCode = item.code;
+          });
+        });
   }
 
   //抽取前先实现业务

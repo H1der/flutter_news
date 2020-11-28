@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_news/common/utils/storage.dart';
 import 'package:flutter_news/common/values/value.dart';
 
 class CacheObject {
@@ -29,6 +30,9 @@ class NetCache extends Interceptor {
     //refresh 标记是否下拉刷新
     bool refresh = options.extra["refresh"] == true;
 
+    // 是否是磁盘缓存
+    bool cacheDisk = options.extra["cacheDisk"] == true;
+
     // 如果是下拉刷新,先删除相关缓存
     if (refresh) {
       if (options.extra["list"] == true) {
@@ -38,6 +42,10 @@ class NetCache extends Interceptor {
         // 如果不是列表,则只删除uri相同的缓存
         delete(options.uri.toString());
       }
+      // 删除磁盘缓存
+      if (cacheDisk) {
+        await StorageUtil().remove(options.uri.toString());
+      }
       return options;
     }
 
@@ -45,15 +53,30 @@ class NetCache extends Interceptor {
     if (options.extra["noCache"] != true &&
         options.method.toLowerCase() == "get") {
       String key = options.extra["cacheKey"] ?? options.uri.toString();
+
+      // 策略: 1内存缓存优先 ,2 然后才是磁盘缓存
+
+      // 1 内存缓存
       var ob = cache[key];
       if (ob != null) {
         //若缓存未过期，则返回缓存内容
-        if ((DateTime.now().millisecondsSinceEpoch - ob.timeStamp) / 1000 <
+        if ((DateTime
+            .now()
+            .millisecondsSinceEpoch - ob.timeStamp) / 1000 <
             CACHE_MAXAGE) {
           return cache[key].response;
         } else {
           //若已过期则删除缓存，继续向服务器请求
           cache.remove(key);
+        }
+      }
+      if (cacheDisk) {
+        var cacheData = StorageUtil().getJSON(key);
+        if (cacheData != null) {
+          return Response(
+            statusCode: 200,
+            data: cacheData,
+          );
         }
       }
     }

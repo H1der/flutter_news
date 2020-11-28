@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
@@ -12,6 +11,12 @@ class Global {
   /// 用户配置
   static UserLoginResponseEntity profile =
       UserLoginResponseEntity(accessToken: null);
+
+  /// 是否第一次打开
+  static bool isFirstOpen = false;
+
+  /// 是否离线登录
+  static bool isOffLineLogin = false;
 
   /// 是否 release
   static bool get isRelease => bool.fromEnvironment("dart.vm.product");
@@ -25,8 +30,18 @@ class Global {
     await StorageUtil.init();
     HttpUtil();
 
+    // 读取设备第一次打开
+    isFirstOpen = !StorageUtil().getBool(STORAGE_DEVICE_ALREADY_OPEN_KEY);
+    if (isFirstOpen) {
+      StorageUtil().setBool(STORAGE_DEVICE_ALREADY_OPEN_KEY, true);
+    }
+
     // 读取离线用户信息
-    // StorageUtil().getJson
+    var _profileJSON = StorageUtil().getJSON(STORAGE_USER_PROFILE_KEY);
+    if (_profileJSON != null) {
+      profile = UserLoginResponseEntity.fromJson(_profileJSON);
+      isOffLineLogin = true;
+    }
 
     // http 缓存
 

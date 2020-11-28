@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_news/global.dart';
-import 'package:flutter_news/pages/welcome/welcome.dart';
+import 'package:flutter_news/pages/index/index.dart';
 import 'package:flutter_news/routes.dart';
 
 // void main() => runApp(MyApp());
@@ -11,7 +11,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo', routes: staticRoutes, home: WelcomePage());
+        title: 'Hider Learn Flutter Demo',
+        routes: staticRoutes,
+        debugShowCheckedModeBanner: false,
+        home: IndexPage());
   }
 }
-

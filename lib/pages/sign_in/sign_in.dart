@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_news/common/apis/api.dart';
+import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/screen.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
 import 'package:flutter_news/common/widgets/widgets.dart';
+import 'package:flutter_news/global.dart';
 
 class SignInPage extends StatefulWidget {
   @override
@@ -32,11 +35,12 @@ class _SignInPageState extends State<SignInPage> {
     //   return;
     // }
 
-    // UserLoginRequestEntity params = UserLoginRequestEntity(
-    //     email: _emailController.value.text,
-    //     password: duSHA256(_passController.value.text));
-    //
-    // UserLoginResponseEntity res = await UserApi.login(params: params);
+    UserLoginRequestEntity params = UserLoginRequestEntity(
+        email: _emailController.value.text,
+        password: duSHA256(_passController.value.text));
+
+    UserLoginResponseEntity res = await UserApi.login(params: params);
+    Global.saveProfile(res);
     // print(res);
     Navigator.pushNamed(context, "/app");
   }

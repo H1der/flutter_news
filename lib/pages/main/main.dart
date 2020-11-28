@@ -30,10 +30,10 @@ class _MainPageState extends State<MainPage> {
 
   // 读取所有数据
   _loadAllData() async {
-    _categories = await NewsAPI.categories();
-    _channels = await NewsAPI.channels();
-    _newsRecommend = await NewsAPI.newsRecommend();
-    _newsPageList = await NewsAPI.newsPageList();
+    _categories = await NewsAPI.categories(context: context);
+    _channels = await NewsAPI.channels(context: context);
+    _newsRecommend = await NewsAPI.newsRecommend(context: context);
+    _newsPageList = await NewsAPI.newsPageList(context: context);
 
     _selCategoryCode = _categories.first.code;
     if (mounted) {

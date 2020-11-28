@@ -4,9 +4,11 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/server.dart';
 import 'package:flutter_news/common/values/value.dart';
+import 'package:flutter_news/common/widgets/toast.dart';
 import 'package:flutter_news/global.dart';
 
 class HttpUtil {
@@ -61,9 +63,23 @@ class HttpUtil {
       // Loading.complete(response.request.uri);
       return response; // continue
     }, onError: (DioError e) {
+      ErrorEntity eInfo = createErrorEntity(e);
+      // 错误提示
+      toastInfo(msg: eInfo.message);
+      // 错误交互处理
+      var context = e.request.extra["context"];
+      if (context != null) {
+        switch (eInfo.code) {
+          case 401: // 没有权限，重新登录
+            goLoginPage(context);
+            break;
+          default:
+        }
+      }
+
       // print("错误之前");
       // Loading.complete(e.request.uri);
-      return e; //continue
+      return eInfo; //continue
     }));
     // 加内存缓存
     dio.interceptors.add(NetCache());
@@ -207,6 +223,7 @@ class HttpUtil {
   /// cacheKey 缓存key
   Future get(
     String path, {
+    @required BuildContext context,
     dynamic params,
     Options options,
     bool refresh = false,
@@ -217,6 +234,7 @@ class HttpUtil {
     try {
       Options requestOptions = options ?? Options();
       requestOptions = requestOptions.merge(extra: {
+        "context": context,
         "refresh": refresh,
         "noCache": noCache,
         "list": list,
@@ -238,8 +256,12 @@ class HttpUtil {
   }
 
   /// restful post 操作
-  Future post(String path, {dynamic params, Options options}) async {
+  Future post(String path,
+      {@required BuildContext context, dynamic params, Options options}) async {
     Options requestOptions = options ?? Options();
+    requestOptions = requestOptions.merge(extra: {
+      "context": context,
+    });
     Map<String, dynamic> _authorization = getAuthorizationHeader();
     if (_authorization != null) {
       requestOptions = requestOptions.merge(headers: _authorization);

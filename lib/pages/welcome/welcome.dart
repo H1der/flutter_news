@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_news/common/router/router.gr.dart';
 import 'package:flutter_news/common/utils/screen.dart';
 import 'package:flutter_news/common/values/colors.dart';
 import 'package:flutter_news/common/values/radii.dart';
@@ -59,7 +61,7 @@ class _WelcomePageState extends State<WelcomePage> {
             width: duSetWidth(80),
             height: duSetHeight(80),
             child: Image.asset("assets/images/$imageName.png",
-            fit:BoxFit.none
+                fit:BoxFit.none
             ),
           ),
           Spacer(),
@@ -96,8 +98,9 @@ class _WelcomePageState extends State<WelcomePage> {
         shape: RoundedRectangleBorder(
           borderRadius: Radii.k6pxRadius,
         ),
-        onPressed: (){
-          Navigator.pushNamed(context, "/sign-in");
+        onPressed: () {
+          ExtendedNavigator.root.push(Routes.signInPage);
+          // Navigator.pushNamed(context, "/sign-in");
         },
       ),
     );

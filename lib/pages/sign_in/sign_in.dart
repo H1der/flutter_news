@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news/common/apis/api.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
+import 'package:flutter_news/common/router/router.gr.dart';
 import 'package:flutter_news/common/utils/screen.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
@@ -43,7 +45,8 @@ class _SignInPageState extends State<SignInPage> {
         await UserApi.login(params: params, context: context);
     Global.saveProfile(res);
     // print(res);
-    Navigator.pushNamed(context, "/app");
+    // Navigator.pushNamed(context, "/app");
+    ExtendedNavigator.root.push(Routes.applicationPage);
   }
 
   // logo

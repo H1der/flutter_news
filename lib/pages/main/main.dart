@@ -44,7 +44,7 @@ class _MainPageState extends State<MainPage> {
     if (CACHE_ENABLE == true) {
       var cacheData = StorageUtil().getJSON(STORAGE_INDEX_NEWS_CACHE_KEY);
       if (cacheData != null) {
-        Timer(Duration(seconds: 3), () {
+        Timer(Duration(seconds: 1), () {
           _controller.callRefresh();
         });
       }

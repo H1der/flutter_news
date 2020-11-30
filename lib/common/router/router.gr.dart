@@ -15,7 +15,9 @@ import '../../pages/index/index.dart';
 import '../../pages/sign_in/sign_in.dart';
 import '../../pages/sign_up/sign_up.dart';
 import '../../pages/welcome/welcome.dart';
+import '../entitys/entitys.dart';
 import 'auth_guard.dart';
+import 'router.dart';
 
 class Routes {
   static const String indexPage = '/';
@@ -46,7 +48,6 @@ class AppRouter extends RouterBase {
         page: ApplicationPage, guards: [AuthGuard]),
     RouteDef(Routes.detailsPage, page: DetailsPage, guards: [AuthGuard]),
   ];
-
   @override
   Map<Type, AutoRouteFactory> get pagesMap => _pagesMap;
   final _pagesMap = <Type, AutoRouteFactory>{
@@ -84,13 +85,13 @@ class AppRouter extends RouterBase {
       final args = data.getArgs<DetailsPageArguments>(
         orElse: () => DetailsPageArguments(),
       );
-      return MaterialPageRoute<dynamic>(
-        builder: (context) => DetailsPage(
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) => DetailsPage(
           key: args.key,
-          title: args.title,
-          url: args.url,
+          item: args.item,
         ),
         settings: data,
+        transitionsBuilder: zoomInTransition,
       );
     },
   };
@@ -103,8 +104,7 @@ class AppRouter extends RouterBase {
 /// DetailsPage arguments holder class
 class DetailsPageArguments {
   final Key key;
-  final String title;
-  final String url;
+  final NewsItem item;
 
-  DetailsPageArguments({this.key, this.title, this.url});
+  DetailsPageArguments({this.key, this.item});
 }

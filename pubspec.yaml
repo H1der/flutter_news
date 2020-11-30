@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -55,6 +55,9 @@ dependencies:
   # 路由
   auto_route: ^0.6.9
 
+  # 加载动画
+  loading_animations: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -62,6 +65,9 @@ dev_dependencies:
   # 路由生成
   auto_route_generator: ^0.6.10
   build_runner:
+
+  # webview
+  webview_flutter: ^1.0.7
 
 
 # For information on the generic Dart part of this file, see the

@@ -16,6 +16,7 @@ Widget zoomInTransition(BuildContext context, Animation<double> animation,
 }
 
 @MaterialAutoRouter(
+  // generateNavigationHelperExtension: true,
   routes: <AutoRoute>[
     // initial route is named "/"
     MaterialRoute(page: IndexPage, initial: true),
@@ -23,7 +24,10 @@ Widget zoomInTransition(BuildContext context, Animation<double> animation,
     MaterialRoute(page: SignInPage),
     MaterialRoute(page: SignUpPage),
     MaterialRoute(page: ApplicationPage, guards: [AuthGuard]),
-    MaterialRoute(page: DetailsPage, guards: [AuthGuard]),
+    CustomRoute(
+        page: DetailsPage,
+        guards: [AuthGuard],
+        transitionsBuilder: zoomInTransition),
   ],
 )
 class $AppRouter {}

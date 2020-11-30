@@ -5,7 +5,7 @@ import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
 import 'package:flutter_news/common/widgets/widgets.dart';
-import 'package:loading_animations/loading_animations.dart';
+import 'package:share/share.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -50,7 +50,7 @@ class _DetailsPageState extends State<DetailsPage> {
               color: AppColors.primaryText,
             ),
             onPressed: () {
-              // Share.share('${widget.item.title} ${widget.item.url}');
+              Share.share('${widget.item.title} ${widget.item.url}');
             },
           ),
         ]);
@@ -288,12 +288,6 @@ class _DetailsPageState extends State<DetailsPage> {
                 ],
               ),
             ),
-            _isPageFinished == true
-                ? Container()
-                : Align(
-                    alignment: Alignment.center,
-                    child: LoadingBouncingLine.circle(),
-                  ),
           ],
         ));
   }

@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
+import 'package:flutter_news/common/router/router.gr.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
 import 'package:flutter_news/common/widgets/widgets.dart';
@@ -40,20 +42,26 @@ Widget newsItem(NewsItem item) {
               ),
               // 标题
               Container(
-                margin: EdgeInsets.only(top: duSetHeight(10)),
-                child: Text(
-                  item.title,
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.primaryText,
-                    fontSize: duSetFontSize(16),
-                    height: 1,
-                  ),
-                  overflow: TextOverflow.clip,
-                  maxLines: 3,
-                ),
-              ),
+                  margin: EdgeInsets.only(top: duSetHeight(10)),
+                  child: InkWell(
+                    onTap: () {
+                      ExtendedNavigator.root.push(Routes.detailsPage,
+                          arguments: DetailsPageArguments(item: item));
+                      // ExtendedNavigator(router: Router(), name: "nestedNav");
+                    },
+                    child: Text(
+                      item.title,
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.primaryText,
+                        fontSize: duSetFontSize(16),
+                        height: 1,
+                      ),
+                      overflow: TextOverflow.clip,
+                      maxLines: 3,
+                    ),
+                  )),
               // Spacer
               Spacer(),
               // 一行 3 列

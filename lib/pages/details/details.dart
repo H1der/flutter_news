@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_news/common/entitys/entitys.dart';
 import 'package:flutter_news/common/utils/utils.dart';
 import 'package:flutter_news/common/values/value.dart';
 import 'package:flutter_news/common/widgets/widgets.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:share/share.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -288,7 +290,21 @@ class _DetailsPageState extends State<DetailsPage> {
                 ],
               ),
             ),
+            _isPageFinished == true
+                ? Container()
+                : Align(
+                    alignment: Alignment.center,
+                    child: LoadingBouncingGrid.square(),
+                  ),
           ],
         ));
+  }
+
+  // 混合模式，解决闪屏问题
+  @override
+  void initState() {
+    super.initState();
+    // Enable hybrid composition.
+    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 }
